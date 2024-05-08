@@ -3,7 +3,7 @@ package sit707_week2;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 
 import java.util.concurrent.TimeUnit;
 
@@ -18,12 +18,11 @@ public class SeleniumOperations {
     }
 
     public static void bunnings_login_page(String url) {
-        // Set ChromeDriver executable path
-        System.setProperty("webdriver.chrome.driver", 
-        		"C:/chromedriver-win64/chromedriver-win64/chromedriver-win64/chromedriver.exe");
+        // Set GeckoDriver executable path
+        System.setProperty("webdriver.gecko.driver", "D:\\firefoxdriver\\geckodriver.exe");
 
-        // Initialize ChromeDriver
-        WebDriver driver = new ChromeDriver();
+        // Initialize FirefoxDriver
+        WebDriver driver = new FirefoxDriver();
 
         // Maximize the browser window
         driver.manage().window().maximize();
@@ -67,5 +66,9 @@ public class SeleniumOperations {
             driver.quit();
             System.out.println("Browser closed.");
         }
+    }
+
+    public static void main(String[] args) {
+        bunnings_login_page("https://www.bunnings.com.au/login");
     }
 }
