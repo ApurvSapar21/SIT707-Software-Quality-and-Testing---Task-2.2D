@@ -1,11 +1,15 @@
 package sit707_week2;
 
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.locators.RelativeLocator;
 
-import java.util.concurrent.TimeUnit;
+import java.io.File;
 
 public class SeleniumOperations {
 
@@ -17,58 +21,71 @@ public class SeleniumOperations {
         }
     }
 
-    public static void bunnings_login_page(String url) {
+    public static void officeworks_registration_page(String url) {
         // Set GeckoDriver executable path
         System.setProperty("webdriver.gecko.driver", "D:\\firefoxdriver\\geckodriver.exe");
 
-        // Initialize FirefoxDriver
+        // Step 2: Use above chrome driver to open up a chromium browser.
+        System.out.println("Fire up FireFox browser.");
         WebDriver driver = new FirefoxDriver();
 
-        // Maximize the browser window
-        driver.manage().window().maximize();
+        System.out.println("Driver info: " + driver);
 
-        // Implicit wait for elements
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        // Load a webpage in chromium browser.
+        driver.get(url);
+       // System.out.println("Opened URL: " + url);
 
         try {
-            // Navigate to the Bunnings login page
-            driver.get(url);
+            // Find and fill the first name input field using relative locator (below)
+            WebElement firstNameElement = driver.findElement(RelativeLocator.withTagName("input").above(By.id("lastname")));
+            firstNameElement.sendKeys("Apurv");
 
-            // Locate email input and enter username
-            WebElement usernameElement = driver.findElement(By.xpath("//*[@id='okta-signin-username']"));
-            usernameElement.sendKeys("ahsan@xyz.com");
+            // Find and fill the last name input field using relative locator (below)
+            WebElement lastNameElement = driver.findElement(RelativeLocator.withTagName("input").below(firstNameElement));
+            lastNameElement.sendKeys("Sapar");
 
-            // Locate password input and enter password
-            WebElement passwordElement = driver.findElement(By.xpath("//*[@id='okta-signin-password']"));
-            passwordElement.sendKeys("Ahsan_pass1");
+            // Find and fill the phone number input field using relative locator (below)
+            WebElement phoneNumberElement = driver.findElement(RelativeLocator.withTagName("input").below(lastNameElement));
+            phoneNumberElement.sendKeys("0123456789");
 
-            // Locate sign-in button and click
-            WebElement signInButton = driver.findElement(By.xpath("//*[@id='okta-signin-submit']"));
-            signInButton.click();
+            // Find and fill the email input field using relative locator (below)
+            WebElement emailElement = driver.findElement(RelativeLocator.withTagName("input").below(phoneNumberElement));
+            emailElement.sendKeys("abz@gmail.com");
 
-            // Sleep for a while to observe the result (not recommended for actual tests)
-            sleep(5);
+            // Find and fill the password input field using relative locator (below)
+            WebElement passwordElement = driver.findElement(RelativeLocator.withTagName("input").below(emailElement));
+            passwordElement.sendKeys("pass"); // Invalid password
 
-            // Get the current URL after sign-in
-            String currentUrl = driver.getCurrentUrl();
+            // Find the "Create account" button and click it
+            WebElement createAccountButton = driver.findElement(By.xpath("//button[contains(text(), 'Create account')]"));
+            createAccountButton.click();
+            System.out.println("Clicked on Create Account button.");
 
-            // Check if login was successful based on URL
-            if (currentUrl.contains("dashboard")) {
+            String expectedTitle = "Officeworks Identity Application";
+            String actualTitle = driver.getTitle();
+
+            // Checkpoint
+            if (expectedTitle.equals(actualTitle)) {
                 System.out.println("Login Successful");
             } else {
                 System.out.println("Login Failed");
             }
 
+            // Take screenshot using Selenium API
+            File screenshotFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            FileUtils.copyFile(screenshotFile, new File("officeworks_registration_page_screenshot.png"));
+            System.out.println("Screenshot captured and saved.");
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            // Close the browser
+            // Sleep a while before closing the browser
+            sleep(2);
+
+            // Close chrome driver
             driver.quit();
             System.out.println("Browser closed.");
         }
     }
 
-    public static void main(String[] args) {
-        bunnings_login_page("https://www.bunnings.com.au/login");
-    }
 }
